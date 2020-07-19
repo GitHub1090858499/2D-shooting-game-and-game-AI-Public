@@ -1,0 +1,30 @@
+td
+{
+height:30px;
+vertical-align:bottom;
+text-align:left;
+padding:10px;
+}
+
+table,th, td
+{
+border-collapse:collapse;
+border: 3px solid black;
+}
+	
+th{
+	text-align:center;
+}
+
+table{
+	
+	margin: auto;
+	margin-top:20px ;
+}
+
+#net{
+	text-align:center;
+	border: 3px solid blue;
+}
+
+

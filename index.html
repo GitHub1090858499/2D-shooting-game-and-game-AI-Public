@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<link rel="stylesheet" href="styles/table.css" type="text/css" />
+	</head>
+	<body>
+	</body>
+</html>
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>测试自动寻路方法</title>
+		<script src="scripts/jquery-1.12.4.js"></script>
+		<script language=javascript src='scripts/xcore.js'></script>
+		<script language=javascript src='scripts/vue.min.js'></script>
+		<!-- //测试一：gameFrames、events -->
+		<script language=javascript src='scripts/engine/gameFrames.js'></script>
+		<script language=javascript src='scripts/engine/listener.js'></script>
+		
+		<!-- //测试二： -->
+		<script language=JavaScript src='scripts/engine/scene.js'></script>
+		<script language=JavaScript src='scripts/engine/sceneManager.js'></script>
+		
+		
+		<!-- //测试三： -->
+		<script language=JavaScript src='scripts/engine/renderObj.js'></script>
+		<script language=JavaScript src='scripts/engine/renderObjSon/renderObjBlock.js'></script>
+		
+		<!-- //测试四： -->
+		<script language=JavaScript src='scripts/renderFunction.js'></script>
+		<script language=JavaScript src='scripts/engine/renderObjSon/renderObjMan.js'></script>
+		<script language=JavaScript src='scripts/engine/renderObjSon/renderObjBullet.js'></script>
+		<script language=JavaScript src='scripts/engine/renderObjSon/renderObjBadMan.js'></script>
+		<script language=JavaScript src='scripts/engine/listeners/listenerCrash.js'></script>
+		<script language=JavaScript src='scripts/engine/renderObjSon/renderObjEndGame.js'></script>
+		<script language=JavaScript src='scripts/engine/renderObjSon/renderObjMenu.js'></script>
+		<script language=JavaScript src='scripts/engine/scenes/sceneGame.js'></script>
+		<script language=JavaScript src='scripts/engine/scenes/sceneMenu.js'></script>
+		<script language=JavaScript src='scripts/engine/scenes/SceneEnd.js'></script>
+		
+		<!-- //测试五： -->
+		<script language=JavaScript src='scripts/engine/ai/map.js'></script>
+		<script language=JavaScript src='scripts/engine/ai/view.js'></script>
+		<script language=JavaScript src='scripts/engine/ai/avoid.js'></script>
+		<!-- 测试六 -->
+		<script language=JavaScript src='scripts/engine/ai/state/fuzzyLogic.js'></script>
+		
+		<script language=JavaScript src='scripts/engine/ai/state/controlState.js'></script>
+		<script language=JavaScript src='scripts/engine/ai/state/teamControl.js'></script>
+		
+		<script language=JavaScript src='scripts/engine/ai/state/neuralNet.js'></script>
+		<script language=javascript src='scripts/engine/game.js'></script>
+		<style type="text/css">
+			  *{
+			            margin: 0px;
+			            padding: 0px;
+			        }
+			
+			        #processs{
+			            position: fixed;
+			            left: 50%;
+			            top: 50%;
+			            border-style: solid;
+			            border-width: thin;
+			            border-color: black;
+			            width: 650px;
+			            height: 200px;
+			            margin-left: -325px;
+			            margin-top: -100px;
+			            display: table-cell;
+			            vertical-align: middle;
+						background-color: #000000;
+						z-index: 1000;
+			        }
+			
+			        .process{
+			
+			            border: 1px solid black;
+			            /*border-style: solid;*/
+			            /*border-color: black;*/
+			            text-align: center;
+			            line-height: 60px;
+			            vertical-align: middle;
+			            margin: auto;
+			            margin-top: 20px;
+			            width: 600px;
+			            height: 60px;
+						background-color: #FFFFFF;
+			        }
+			        .process>div{
+			            position: absolute;
+			            width: 200px;
+			            height: 60px;
+			            background-color: fuchsia;
+						opacity:0.3;
+			        }
+			
+			        .process>span{
+			            display: inline-block;
+						z-index: 1002;
+			            /*position: absolute;*/
+						
+			        }
+		</style>
+		<style>
+			*{
+				margin: 0rem;
+				padding: 0rem;
+				
+			}
+			#gameHolder{
+				position: absolute;
+				top: 100px;
+				left: 600px;
+				border: 1px #000000 solid;
+			}
+			
+			#sc_game{
+				text-align: center;
+				
+			}
+			#sc_game>button{
+				margin-left:10px;
+				padding-left: 10px;
+				padding-right:10px ;
+			}
+				
+			#control_game{
+				width: 450px;
+				background-color: #ff0000;
+				border: 2px #0000FF solid;
+				top: 10px;
+				left:10px;
+				position: absolute;	
+				text-align: center;
+			}	
+			#control_game>*{
+				/* text-align: center; */
+				padding: 8px;
+				margin: 5px;
+			}
+			
+			#control_game>form{
+				text-align: left;
+				padding: 8px;
+			}
+
+			
+			
+			#net_show{
+				border: 1px #000000 solid;
+				width: 250px;
+				position: absolute;
+				top: 550px;
+				left: 10px;
+			}
+			#net_show>ul>li{
+				padding-top:5px;
+				padding-bottom:5px;
+				border:1px #000000 solid;
+			}
+			li{
+				list-style: none;
+			}
+			.w_net{
+				margin-left: 10px;
+			}
+			.w_net>span{
+				margin-right: 10px;
+			}
+			
+			.wdiv{
+				display: none;
+			}
+			
+			.noned .wdiv{
+				display: block;
+			}
+			
+			img{
+				position: absolute;
+				width: 500px;
+				height: 250px;
+				top: 550px;
+				left: 300px;
+				border: 1px #000000 solid;
+			}
+			
+			#mind{
+				position: absolute;
+				border: 1px #000000 solid;
+				width: 600px;
+				height: 450px;
+				top:50px;
+				left:1300px;
+			}
+			#mind>textarea{
+				width: 100%;
+				height: 418px;
+				font-size: 18px;
+			}
+			#stateCo{
+				position: absolute;
+				/* float: right; */
+				top: 150px;
+				left: 300px;
+				background-color: #0000FF;
+			}
+			
+			#netupdata{
+				width: 300px;
+				height: 110px;
+				position: absolute;
+				border: 1px solid black;
+			}
+			#netupdata>*{
+				margin-top: 2px;
+			}
+		
+		</style>
+		<script>
+			//动态显示权值内容
+			$(function(){
+				
+				$("#net_show>ul>li").mouseenter(function(){
+					// alert("s");
+					$(this).addClass("noned");
+				});
+				
+				$("#net_show>ul>li").mouseleave(function(){
+					// alert("s");
+					$(this).removeClass("noned");
+				});
+				
+				$("img").mouseenter(function(){
+					$(this).css({
+						"position": "absolute",
+						"width": '50%',
+						'height': '50%',
+						'top': '400px',
+						'left': '50px',
+					})
+				});
+				$("img").mouseleave(function(){
+					$(this).css({
+						"position": "absolute",
+						"width": '500px',
+						'height': '250px',
+						'top': '550px',
+						'left': '300px',
+					})
+				});
+			});
+			
+			//控制台
+			$(function(){
+				
+				$(".nets").hide();
+				$("#netupdata").hide();
+				$("#obt").click(function(){
+					//状态
+					if($("input[name='state'][value='on']").eq(0).prop("checked")){
+						Game.showState=true;
+					}else{
+						Game.showState=false;
+					}
+					
+					//寻路
+					if($("input[name='findway'][value='on']").eq(0).prop("checked")){
+						Game.showFindway=true;
+					}else{
+						Game.showFindway=false;
+					}
+					
+					//搜索
+					if($("input[name='search'][value='on']").eq(0).prop("checked")){
+						Game.showSearchway=true;
+					}else{
+						Game.showSearchway=false;
+					}
+					
+					//视线
+					if($("input[name='view'][value='on']").eq(0).prop("checked")){
+						Game.showView=true;
+					}else{
+						Game.showView=false;
+					}
+					
+					//神经网络显示
+					if($("input[name='net'][value='on']").eq(0).prop("checked")){
+							$(".nets").show();
+					}else{
+							$(".nets").hide();
+					}
+					
+					//设置神经网络
+					if($("input[name='setnet'][value='on']").eq(0).prop("checked")){
+						$("#netupdata").show();
+					}else{
+						$("#netupdata").hide();
+					}
+					
+					//团队合作
+					if($("input[name='team'][value='on']").eq(0).prop("checked")){
+						Game.setteam=true;
+					}else{
+						Game.setteam=false;
+					}
+					
+					//血量超高
+					if($("input[name='hhp'][value='on']").eq(0).prop("checked")){
+						Game.setHHp=true;
+					}else{
+						Game.setHHp=false;
+					}
+					
+					//测试专用背景
+					if($("input[name='bg'][value='on']").eq(0).prop("checked")){
+						Game.setBackG=true;
+					}else{
+						Game.setBackG=false;
+					}
+					
+				})
+				//状态切换
+				$("#stateCo").hide();
+				$("#openstate").click(function(){
+					if(Game.setBackG==true&&window.thegame.sceneManager.getScene("game").getObjByName("BadMan1"))
+					$("#stateCo").toggle();
+				})
+				//警戒状态
+				$("#stateCo>button").eq(0).click(function(){
+					let badm=window.thegame.sceneManager.getScene("game").getObjByName("BadMan1");
+					badm.stateControl.state=badm.stateControl.stateAlert;
+					badm.stateControl.state.setInit();
+				})
+				//警戒射击状态
+				$("#stateCo>button").eq(1).click(function(){
+					let badm=window.thegame.sceneManager.getScene("game").getObjByName("BadMan1");
+					badm.stateControl.state=badm.stateControl.stateStandShoot;
+					badm.stateControl.state.setInit();
+				})
+				//巡逻状态
+				$("#stateCo>button").eq(2).click(function(){
+					let badm=window.thegame.sceneManager.getScene("game").getObjByName("BadMan1");
+					badm.stateControl.state=badm.stateControl.statePatrol;
+					badm.stateControl.state.setInit();
+				})
+				//狙击状态
+				$("#stateCo>button").eq(3).click(function(){
+					let badm=window.thegame.sceneManager.getScene("game").getObjByName("BadMan1");
+					badm.stateControl.state=badm.stateControl.stateSnipe;
+					badm.stateControl.state.setInit();
+				})
+				//追击状态
+				$("#stateCo>button").eq(4).click(function(){
+					let badm=window.thegame.sceneManager.getScene("game").getObjByName("BadMan1");
+					badm.stateControl.state=badm.stateControl.stateTrace;
+					badm.stateControl.state.setInit();
+				})
+				//躲射状态
+				$("#stateCo>button").eq(5).click(function(){
+					let badm=window.thegame.sceneManager.getScene("game").getObjByName("BadMan1");
+					badm.stateControl.state=badm.stateControl.stateHideShoot;
+					badm.stateControl.state.setInit();
+				})
+				
+				
+				$("#netupdata>input[type='submit']").click(function(){
+					
+					
+					//神经网络权值更新
+					let net=window.thegame.sceneManager.getScene("game").neuraNet;
+					let thg=$("#netupdata>select").val();
+					let thegg=net.netWs[Number(thg)];
+					net._setWWs(thegg);
+					
+					
+					
+					if($("#netupdata>input[type='radio'][value='on']").eq(0).prop("checked")){
+						//开启
+						window.thegame.netupdata=true;
+						try{
+						//最大个数
+						window.thegame.nettrain=Number($("#netupdata>input[type='number']").val()) ;
+						}catch(e){
+							alert("输入错误！")
+							window.thegame.nettrain=50;
+						}
+					}else{
+						//开启
+						window.thegame.netupdata=false;
+					}
+					
+				
+					
+					
+				})
+				
+				
+				
+			})
+		</script>
+	</head>
+	<body>
+	
+	<div id="control_game">
+		<!-- 控制台 -->
+		<h2>测试台</h2>
+		<form name="my_form" method="POST">
+		        状态显示：
+		        <input type="radio" name="state" value="on">开
+		        <input type="radio" name="state" value="off" checked>关<br />
+				寻路显示：
+				<input type="radio" name="findway" value="on">开
+				<input type="radio" name="findway" value="off" checked>关<br />
+				搜索显示：
+				<input type="radio" name="search" value="on">开
+				<input type="radio" name="search" value="off" checked>关<br />
+				视线显示：
+				<input type="radio" name="view" value="on">开
+				<input type="radio" name="view" value="off" checked>关<br />
+				神经网络显示：
+				<input type="radio" name="net" value="on">开
+				<input type="radio" name="net" value="off" checked>关<br />
+				打开神经网络面板：
+				<input type="radio" name="setnet" value="on">开
+				<input type="radio" name="setnet" value="off" checked>关<br />
+				团队合作开启：
+				<input type="radio" name="team" value="on">开
+				<input type="radio" name="team" value="off" checked>关<br />
+				<h4>以下重新开始游戏生效：</h4>
+				主角血量超高：
+				<input type="radio" name="hhp" value="on">开
+				<input type="radio" name="hhp" value="off" checked>关<br />
+				测试专用地形：
+				<input type="radio" name="bg" value="on">开
+				<input type="radio" name="bg" value="off" checked>关 <input type="button"  id="openstate" value="打开状态控制"><br />
+		</form>
+		<input type="button" id="obt" value="确认修改" />	
+		<div id="stateCo">
+			<button type="button">警戒状态</button><br />
+			<button type="button">神经网络射击状态</button><br />
+			<button type="button">巡逻状态</button><br />
+			<button type="button">狙击状态</button><br />
+			<button type="button">追击状态</button><br />
+			<button type="button">躲射状态</button><br />
+		</div>
+	
+		<div id="netupdata">
+			选择权值：<select></select>
+			<br/>神经网络更新开关
+			<input type="radio" name="updatanet" value="on">开
+			<input type="radio" name="updatanet" value="off" checked>关<br />
+			训练集最大值（默认50）：<input type="number" min="0" max="100" size="3" placeholder="0~100"/><br/>
+			<p></p>
+			<input type="submit" value="修改"/>
+		</div>
+	</div>
+	
+	<div id='gameHolder'>
+	<!-- 游戏主体 -->	
+	</div>
+
+	<div id="net_show" class="nets">
+		<h2>神经网络权值</h2>
+		<ul>
+			<li class="y_net">y1
+				<div class="wdiv">
+					<ul>
+						<li class="w_net"><span>w0:</span>?？</li>
+						<li class="w_net"><span>w1:</span>?？</li>
+						<li class="w_net"><span>w2:</span>?？</li>
+						<li class="w_net"><span>w3:</span>?？</li>
+						<li class="w_net"><span>w4:</span>?？</li>
+					</ul>
+				</div>
+			</li>
+			<li class="y_net">y2
+				<div class="wdiv">
+					<ul>
+						<li class="w_net"><span>w0:</span>?？</li>
+						<li class="w_net"><span>w1:</span>?？</li>
+						<li class="w_net"><span>w2:</span>?？</li>
+						<li class="w_net"><span>w3:</span>?？</li>
+						<li class="w_net"><span>w4:</span>?？</li>
+					</ul>
+				</div>
+			</li>
+			<li class="n_net">n1
+				<div class="wdiv">
+					<ul>
+						<li class="w_net"><span>w0:</span>?？</li>
+						<li class="w_net"><span>w1:</span>?？</li>
+						<li class="w_net"><span>w2:</span>?？</li>
+						<li class="w_net"><span>w3:</span>?？</li>
+						<li class="w_net"><span>w4:</span>?？</li>
+						<li class="w_net"><span>w5:</span>?？</li>
+					</ul>
+				</div>
+			</li>
+			<li class="n_net">n2
+				<div class="wdiv">
+					<ul>
+						<li class="w_net"><span>w0:</span>?？</li>
+						<li class="w_net"><span>w1:</span>?？</li>
+						<li class="w_net"><span>w2:</span>?？</li>
+						<li class="w_net"><span>w3:</span>?？</li>
+						<li class="w_net"><span>w4:</span>?？</li>
+						<li class="w_net"><span>w5:</span>?？</li>
+					</ul>
+				</div>
+			</li>
+			<li class="n_net">n3
+				<div class="wdiv">
+					<ul>
+						<li class="w_net"><span>w0:</span>?？</li>
+						<li class="w_net"><span>w1:</span>?？</li>
+						<li class="w_net"><span>w2:</span>?？</li>
+						<li class="w_net"><span>w3:</span>?？</li>
+						<li class="w_net"><span>w4:</span>?？</li>
+						<li class="w_net"><span>w5:</span>?？</li>
+					</ul>
+				</div>
+			</li>
+			<li class="n_net">n4
+				<div class="wdiv">
+					<ul>
+						<li class="w_net"><span>w0:</span>?？</li>
+						<li class="w_net"><span>w1:</span>?？</li>
+						<li class="w_net"><span>w2:</span>?？</li>
+						<li class="w_net"><span>w3:</span>?？</li>
+						<li class="w_net"><span>w4:</span>?？</li>
+						<li class="w_net"><span>w5:</span>?？</li>
+					</ul>
+				</div>
+			</li>
+		</ul>
+	</div>
+	
+	<div id="mind">
+		<h2>AI心理想法</h2>
+		<textarea rows="20" cols="83">......
+		</textarea>
+	</div>
+	
+	<img class="nets" src="./images/1.png"/>
+
+	<script src="scripts/main.js"></script>
+	
+	</body>
+</html>
